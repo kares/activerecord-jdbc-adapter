@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
   s.email = %q{nick@nicksieger.com, ola.bini@gmail.com}
 
   s.files = [
-    "Rakefile", "README.txt", "LICENSE.txt",
+    "Rakefile", "README.md", "LICENSE.txt",
     *Dir["lib/**/*"].to_a
   ]
 
