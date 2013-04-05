@@ -283,8 +283,18 @@ module ActiveRecord
         rows
       end
       
-      def select(sql, name = nil, binds = []) # NOTE: only (sql, name) AR < 3.1
+      if ActiveRecord::VERSION::MAJOR > 3 # expects AR::Result e.g. from select_all
+        
+      def select(sql, name = nil, binds = [])
         exec_query(sql, name, binds)
+      end
+        
+      else
+        
+      def select(sql, name = nil, binds = []) # NOTE: only (sql, name) on AR < 3.1
+        exec_raw_query(sql, name, binds)
+      end
+      
       end
       
       if ActiveRecord::VERSION::MAJOR < 3 # 2.3.x
