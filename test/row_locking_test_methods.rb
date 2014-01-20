@@ -5,6 +5,21 @@ require 'models/entry'
 
 module RowLockingTestMethods
 
+  def setup
+    super; EntryMigration.up
+  end
+
+  def teardown
+    down_error = nil
+    begin
+      EntryMigration.down
+    rescue => e
+      down_error = e
+    end
+    super
+    raise down_error if down_error
+  end
+
   # Simple SELECT ... FOR UPDATE test
   def test_select_all_for_update
     @row1_id = Entry.create!(:title => "row1").id

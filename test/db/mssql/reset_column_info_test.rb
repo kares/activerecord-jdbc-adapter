@@ -1,6 +1,6 @@
-require 'db/postgres'
+require 'db/mssql'
 require 'reset_column_info_test_methods'
 
-class PostgresResetColumnInformationTest < Test::Unit::TestCase
+class MSSQLResetColumnInformationTest < Test::Unit::TestCase
   include ResetColumnInformationTestMethods
 end

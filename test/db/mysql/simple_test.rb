@@ -1,20 +1,16 @@
-# To run this script, run the following in a mysql instance:
-#
-#   drop database if exists weblog_development;
-#   create database weblog_development;
-#   grant all on weblog_development.* to blog@localhost;
-#   flush privileges;
-
-require 'jdbc_common'
 require 'db/mysql'
+require 'simple'
+require 'custom_select_test_methods'
+require 'xml_column_test_methods'
 
-class MysqlSimpleTest < Test::Unit::TestCase
+class MySQLSimpleTest < Test::Unit::TestCase
   include SimpleTestMethods
   include ActiveRecord3TestMethods
   include ColumnNameQuotingTests
   include DirtyAttributeTests
-  include XmlColumnTestMethods
+
   include CustomSelectTestMethods
+  include XmlColumnTestMethods
 
   # MySQL does not support precision beyond seconds :
   # DATETIME or TIMESTAMP value can include a trailing fractional seconds part
@@ -370,6 +366,8 @@ class MysqlSimpleTest < Test::Unit::TestCase
 
 end
 
-class MysqlHasManyThroughTest < Test::Unit::TestCase
-  include HasManyThroughMethods
+require 'has_many_through_test_methods'
+
+class MySQLHasManyThroughTest < Test::Unit::TestCase
+  include HasManyThroughTestMethods
 end
