@@ -23,7 +23,7 @@ ArJdbc::ConnectionMethods.module_eval do
       url << "/#{config[:database]}"
       config[:url] = url
     end
-    config[:driver] ||= defined?(::Jdbc::MySQL.driver_name) ? ::Jdbc::MySQL.driver_name : 'com.mysql.jdbc.Driver'
+    config[:driver] ||= 'com.mysql.jdbc.NonRegisteringDriver'
 
     properties = ( config[:properties] ||= {} )
     properties['zeroDateTimeBehavior'] ||= 'convertToNull'
