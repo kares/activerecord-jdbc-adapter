@@ -35,37 +35,37 @@ import org.jruby.runtime.builtin.IRubyObject;
 
 /**
  * ArJdbc::MSSQL
- * 
+ *
  * @author kares
  */
 public class MSSQLModule {
-    
+
     public static RubyModule load(final RubyModule arJdbc) {
         RubyModule mssql = arJdbc.defineModuleUnder("MSSQL");
         mssql.defineAnnotatedMethods( MSSQLModule.class );
         return mssql;
     }
-    
+
     @JRubyMethod(name = "quote_string", required = 1, frame = false)
     public static IRubyObject quote_string(
-            final ThreadContext context, 
-            final IRubyObject self, 
+            final ThreadContext context,
+            final IRubyObject self,
             final IRubyObject string) {
         return quoteSingleQuotesWithFallback(context, string);
     }
-    
+
     @JRubyMethod(name = "quoted_true", required = 0, frame = false)
     public static IRubyObject quoted_true(
-            final ThreadContext context, 
+            final ThreadContext context,
             final IRubyObject self) {
-        return RubyString.newString(context.getRuntime(), BYTES_1);
+        return RubyString.newString(context.runtime, BYTES_1);
     }
-    
+
     @JRubyMethod(name = "quoted_false", required = 0, frame = false)
     public static IRubyObject quoted_false(
-            final ThreadContext context, 
+            final ThreadContext context,
             final IRubyObject self) {
-        return RubyString.newString(context.getRuntime(), BYTES_0);
+        return RubyString.newString(context.runtime, BYTES_0);
     }
-    
+
 }
