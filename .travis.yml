@@ -1,11 +1,19 @@
 language: ruby
-bundler_args: --without development
-script: bundle exec rake test_$DB
-before_script: export JRUBY_OPTS="--server -Xcext.enabled=false -Xcompile.invokedynamic=false"
+
+sudo: false
+
+rvm: jruby
+jdk: openjdk6
+
+bundler_args: --without development --jobs=3 --retry=3
+
 before_install:
   - jruby --1.9 -S gem update --system 2.1.11
-rvm:
-  - jruby
+  
+before_script: export JRUBY_OPTS="--server -Xcext.enabled=false -Xcompile.invokedynamic=false"
+
+script: bundle exec rake test_$DB
+
 gemfile:
   - gemfiles/rails23.gemfile
   - gemfiles/rails30.gemfile
@@ -14,6 +22,7 @@ gemfile:
   - gemfiles/rails40.gemfile
   - gemfiles/rails41.gemfile
   - gemfiles/rails42.gemfile
+
 env:
   - JRUBY_OPTS="--1.8 $JRUBY_OPTS" DB=mysql
   - JRUBY_OPTS="--1.9 $JRUBY_OPTS" DB=mysql PREPARED_STATEMENTS=false
@@ -35,14 +44,14 @@ env:
   # TODO: not sure why it can't connect :
   #- JRUBY_OPTS="--1.8 $JRUBY_OPTS" DB=jdbc
   #- JRUBY_OPTS="--1.9 $JRUBY_OPTS" DB=jdbc
-jdk:
-  - openjdk6
+
 branches:
   only:
     - master
     - /.*-stable$/
     - next
     - /^test-.*/
+
 matrix:
   allow_failures:
     - gemfile: gemfiles/rails42.gemfile
