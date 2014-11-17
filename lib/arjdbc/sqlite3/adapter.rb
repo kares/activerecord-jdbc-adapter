@@ -380,6 +380,9 @@ module ArJdbc
     # NOTE: do not override indexes without testing support for 3.7.2 & 3.8.7 !
     # @override
     def indexes(table_name, name = nil)
+      # on JDBC 3.7 we'll simply do super since it can not handle "PRAGMA index_info"
+      return @connection.indexes(table_name, name) if sqlite_version < '3.8' # super
+
       name ||= 'SCHEMA'
       exec_query_raw("PRAGMA index_list(#{quote_table_name(table_name)})", name).map do |row|
         index_name = row['name']
