@@ -576,6 +576,32 @@ public class PostgreSQLRubyJdbcConnection extends arjdbc.jdbc.RubyJdbcConnection
         return super.extractTableName(connection, catalog, schema, tableName);
     }
 
+    @JRubyMethod // lazy attempt for PG compatibility
+    public IRubyObject transaction_status(final ThreadContext context) {
+        final Connection connection = getConnection(false);
+        if ( connection == null ) {
+            return context.getRuntime().newFixnum(4); // PQTRANS_UNKNOWN(4)
+        }
+        try {
+            final int txState = connection.unwrap(BaseConnection.class).getTransactionState();
+            final int pgState;
+            switch ( txState ) {
+                case 0: // TRANSACTION_IDLE = 0
+                    pgState = 0; break; // PQTRANS_IDLE(0)
+                case 1: // TRANSACTION_OPEN = 1
+                    pgState = 2; break; // PQTRANS_ACTIVE(1)
+                case 2: // TRANSACTION_FAILED = 2
+                    pgState = 3; break; // PQTRANS_INERROR(3)
+                // NOTE: PQTRANS_INTRANS(2) not covered !
+                default: pgState = 4; // PQTRANS_UNKNOWN(4)
+            }
+            return context.getRuntime().newFixnum(pgState);
+        }
+        catch (SQLException e) { // unwrap failed
+            return context.getRuntime().getNil();
+        }
+    }
+
     // NOTE: do not use PG classes in the API so that loading is delayed !
     private String formatInterval(final Object object) {
         final PGInterval interval = (PGInterval) object;
