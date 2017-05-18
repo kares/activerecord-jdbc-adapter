@@ -541,28 +541,9 @@ module ActiveRecord
       # @see #exec_query
       # @see #exec_insert
       # @see #exec_update
-      def execute(sql, name = nil, binds = nil)
-        sql = suble_binds to_sql(sql, binds), binds if binds
-        if name == :skip_logging
-          _execute(sql, name)
-        else
-          log(sql, name) { _execute(sql, name) }
-        end
+      def execute(sql, name = nil)
+        log(sql, name) { _execute(sql, name) }
       end
-
-      # @private documented above
-      def execute(sql, name = nil, skip_logging = false)
-        if skip_logging.is_a?(Array)
-          binds, skip_logging = skip_logging, false
-          sql = suble_binds to_sql(sql, binds), binds
-        end
-        if skip_logging || name == :skip_logging
-          _execute(sql, name)
-        else
-          log(sql, name) { _execute(sql, name) }
-        end
-      end if ActiveRecord::VERSION::MAJOR < 3 ||
-        ( ActiveRecord::VERSION::MAJOR == 3 && ActiveRecord::VERSION::MINOR == 0 )
 
       # We need to do it this way, to allow Rails stupid tests to always work
       # even if we define a new `execute` method. Instead of mixing in a new
@@ -787,7 +768,7 @@ module ActiveRecord
 
       # Provides backwards-compatibility on ActiveRecord 4.1 for DB adapters
       # that override this and than call super expecting to work.
-      # @note This method is available in 4.0 but won't be in 4.1
+      # @note This method is available in AR 4.0 but not in 4.1
       # @private
       def add_column_options!(sql, options)
         sql << " DEFAULT #{quote(options[:default], options[:column])}" if options_include_default?(options)
@@ -908,14 +889,17 @@ module ActiveRecord
 
       # @note Used by Java API to convert dates from (custom) SELECTs (might get refactored).
       # @private
+      # @deprecated not longer used
       def _string_to_date(value); jdbc_column_class.string_to_date(value) end
 
       # @note Used by Java API to convert times from (custom) SELECTs (might get refactored).
       # @private
+      # @deprecated not longer used
       def _string_to_time(value); jdbc_column_class.string_to_dummy_time(value) end
 
       # @note Used by Java API to convert times from (custom) SELECTs (might get refactored).
       # @private
+      # @deprecated not longer used
       def _string_to_timestamp(value); jdbc_column_class.string_to_time(value) end
 
       if ActiveRecord::VERSION::STRING > '4.2'
