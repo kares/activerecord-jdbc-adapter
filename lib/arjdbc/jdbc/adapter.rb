@@ -841,15 +841,13 @@ module ActiveRecord
 
       # @return whether `:prepared_statements` are to be used
       def prepared_statements?
-        return @prepared_statements unless (@prepared_statements ||= nil).nil?
+        return @prepared_statements unless @prepared_statements.nil?
         @prepared_statements = self.class.prepared_statements?(config)
       end
 
       # Allows changing the prepared statements setting for this connection.
       # @see #prepared_statements?
-      #def prepared_statements=(statements)
-      #  @prepared_statements = statements
-      #end
+      def prepared_statements=(statements); @prepared_statements = statements end
 
       def self.prepared_statements?(config)
         config.key?(:prepared_statements) ?
