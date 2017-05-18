@@ -70,6 +70,14 @@ namespace :db do
     when /mariadb/ # fake mariadb as mysql for Rails
       config = config.update('adapter' => 'mysql')
       config['driver'] ||= 'org.mariadb.jdbc.Driver'
+      unless defined? Mysql::Error
+        # NOTE: fake it for create_database(config)
+        Object.const_set :Mysql, Module.new
+        Mysql.const_set :Error, ActiveRecord::JDBCError
+        ActiveRecord::JDBCError.class_eval do
+          def error; self end # Mysql::Error#error
+        end
+      end
       _rails_create_database adapt_jdbc_config(config)
     else
       ArJdbc::Tasks.create(config)
