@@ -438,13 +438,10 @@ module ActiveRecord
       # @return [ActiveRecord::Result] or [Array] on **AR-2.3**
       # @override available since **AR-3.1**
       def exec_query(sql, name = 'SQL', binds = [])
-        if sql.respond_to?(:to_sql)
-          sql = to_sql(sql, binds); to_sql = true
-        end
+        sql = to_sql(sql, binds) if sql.respond_to?(:to_sql)
         if prepared_statements?
           log(sql, name, binds) { @connection.execute_query(sql, binds) }
         else
-          sql = suble_binds(sql, binds) unless to_sql # deprecated behavior
           log(sql, name) { @connection.execute_query(sql) }
         end
       end
@@ -455,13 +452,10 @@ module ActiveRecord
       # @param binds the bind parameters
       # @override available since **AR-3.1**
       def exec_insert(sql, name, binds, pk = nil, sequence_name = nil)
-        if sql.respond_to?(:to_sql)
-          sql = to_sql(sql, binds); to_sql = true
-        end
+        sql = to_sql(sql, binds) if sql.respond_to?(:to_sql)
         if prepared_statements?
           log(sql, name || 'SQL', binds) { @connection.execute_insert(sql, binds) }
         else
-          sql = suble_binds(sql, binds) unless to_sql # deprecated behavior
           log(sql, name || 'SQL') { @connection.execute_insert(sql) }
         end
       end
@@ -472,13 +466,10 @@ module ActiveRecord
       # @param binds the bind parameters
       # @override available since **AR-3.1**
       def exec_delete(sql, name, binds)
-        if sql.respond_to?(:to_sql)
-          sql = to_sql(sql, binds); to_sql = true
-        end
+        sql = to_sql(sql, binds) if sql.respond_to?(:to_sql)
         if prepared_statements?
           log(sql, name || 'SQL', binds) { @connection.execute_delete(sql, binds) }
         else
-          sql = suble_binds(sql, binds) unless to_sql # deprecated behavior
           log(sql, name || 'SQL') { @connection.execute_delete(sql) }
         end
       end
@@ -489,13 +480,10 @@ module ActiveRecord
       # @param binds the bind parameters
       # @override available since **AR-3.1**
       def exec_update(sql, name, binds)
-        if sql.respond_to?(:to_sql)
-          sql = to_sql(sql, binds); to_sql = true
-        end
+        sql = to_sql(sql, binds) if sql.respond_to?(:to_sql)
         if prepared_statements?
           log(sql, name || 'SQL', binds) { @connection.execute_update(sql, binds) }
         else
-          sql = suble_binds(sql, binds) unless to_sql # deprecated behavior
           log(sql, name || 'SQL') { @connection.execute_update(sql) }
         end
       end
@@ -511,13 +499,10 @@ module ActiveRecord
       # instead of returning mapped query results in an array.
       # @return [Array] unless a block is given
       def exec_query_raw(sql, name = 'SQL', binds = [], &block)
-        if sql.respond_to?(:to_sql)
-          sql = to_sql(sql, binds); to_sql = true
-        end
+        sql = to_sql(sql, binds) if sql.respond_to?(:to_sql)
         if prepared_statements?
           log(sql, name, binds) { @connection.execute_query_raw(sql, binds, &block) }
         else
-          sql = suble_binds(sql, binds) unless to_sql # deprecated behavior
           log(sql, name) { @connection.execute_query_raw(sql, &block) }
         end
       end
@@ -855,47 +840,22 @@ module ActiveRecord
             false # off by default - NOTE: on AR 4.x it's on by default !?
       end
 
-      if @@suble_binds = ENV_JAVA['arjdbc.adapter.suble_binds']
-        @@suble_binds = Java::JavaLang::Boolean.parseBoolean(@@suble_binds)
-      else
-        @@suble_binds = ActiveRecord::VERSION::MAJOR < 4 # due compatibility
-      end
-      # @deprecated
-      def self.suble_binds?; @@suble_binds; end
+      # @deprecated always nil on 1.4
+      def self.suble_binds?; nil end
 
       private
 
-      # @note Since AR 4.0 we (finally) do not "sub" SQL's '?' parameters !
-      # @deprecated expected to go away in a future version that drops AR 3.2
+      # @deprecated does nothing - to be removed in AR-JDBC > 1.4
       def suble_binds(sql, binds)
-        return sql if ! @@suble_binds || binds.nil? || binds.empty?
-        binds = binds.dup; warn = nil
-        result = sql.gsub('?') { warn = true; quote(*binds.shift.reverse) }
-        ActiveSupport::Deprecation.warn(
-          "string binds substitution is deprecated - please refactor your sql", caller[1..-1]
-        ) if warn
-        result
+        ActiveSupport::Deprecation.warn('#suble_binds does nothing and will be removed', caller[1..-1])
+        return sql
       end
 
-      # @private Supporting "string-subling" on AR 4.0 would require {#to_sql}
-      # to consume binds parameters otherwise it happens twice e.g. for a record
-      # insert it is called during {#insert} as well as on {#exec_insert} ...
-      # but that than leads to other issues with libraries that save the binds
-      # array and run a query again since it's the very same instance on 4.0 !
-      def suble_binds(sql, binds)
-        sql
-      end if ActiveRecord::VERSION::MAJOR > 3
-
-      # @deprecated No longer used, will be removed.
+      # @deprecated no longer used - to be removed in AR-JDBC > 1.4
       # @see #suble_binds
       def substitute_binds(sql, binds)
         return sql if binds.nil? || binds.empty?; binds = binds.dup
-        extract_sql(sql).gsub('?') { quote(*binds.shift.reverse) }
-      end
-
-      # @deprecated No longer used, kept for 1.2 API compatibility.
-      def extract_sql(arel)
-        arel.respond_to?(:to_sql) ? arel.send(:to_sql) : arel
+        to_sql(sql).gsub('?') { quote(*binds.shift.reverse) }
       end
 
       if ActiveRecord::VERSION::MAJOR > 2
