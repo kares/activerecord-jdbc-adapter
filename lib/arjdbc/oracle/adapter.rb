@@ -869,7 +869,7 @@ module ArJdbc
 
     private
 
-    def _execute(sql, name = nil)
+    def execute_impl(sql)
       if self.class.select?(sql)
         @connection.execute_query_raw(sql)
       elsif self.class.insert?(sql)

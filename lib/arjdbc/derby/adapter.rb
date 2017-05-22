@@ -493,7 +493,7 @@ module ArJdbc
       insert = self.class.insert?(sql)
       update = ! insert && ! self.class.select?(sql)
       sql = correct_is_null(sql, insert || update)
-      super(sql, name, binds)
+      super(sql, name)
     end
 
     # Returns the value of an identity column of the last *INSERT* statement
@@ -527,7 +527,7 @@ module ArJdbc
     if ActiveRecord::VERSION::MAJOR < 3 ||
       ( ActiveRecord::VERSION::MAJOR == 3 && ActiveRecord::VERSION::MINOR < 1 )
 
-    def _execute(sql, name = nil)
+    def execute_impl(sql)
       if self.class.insert?(sql)
         @connection.execute_insert(sql)
       elsif self.class.select?(sql)

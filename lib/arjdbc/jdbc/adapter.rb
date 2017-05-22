@@ -535,36 +535,40 @@ module ActiveRecord
       # returned while for UPDATE statements the affected row count.
       # Please note that this method returns "raw" results (in an array) for
       # statements that return a result set, while {#exec_query} is expected to
-      # return a `ActiveRecord::Result` (since AR 3.1).
+      # return a `ActiveRecord::Result`.
       # @note This method does not use prepared statements.
       # @note The method does not emulate various "native" `execute` results on MRI.
       # @see #exec_query
       # @see #exec_insert
       # @see #exec_update
       def execute(sql, name = nil)
-        log(sql, name) { _execute(sql, name) }
+        log(sql, name) { execute_impl(sql) }
       end
 
-      # We need to do it this way, to allow Rails stupid tests to always work
-      # even if we define a new `execute` method. Instead of mixing in a new
-      # `execute`, an `_execute` should be mixed in.
-      # @deprecated it was only introduced due tests
-      # @private
-      def _execute(sql, name = nil)
+      # @see #execute
+      def execute_impl(sql)
         @connection.execute(sql)
       end
-      private :_execute
+      protected :execute_impl
 
       # Kind of `execute(sql) rescue nil` but logging failures at debug level only.
+      # @private
       def execute_quietly(sql, name = 'SQL')
         log(sql, name) do
           begin
-            _execute(sql)
+            execute_impl(sql)
           rescue => e
             logger.debug("#{e.class}: #{e.message}: #{sql}")
           end
         end
       end
+
+      # @deprecated no longer used (was only introduced due tests)
+      # @private will be removed in AR-JDBC > 1.4
+      def _execute(sql, name = nil)
+        execute_impl(sql)
+      end
+      private :_execute
 
       # @override
       def tables(name = nil)

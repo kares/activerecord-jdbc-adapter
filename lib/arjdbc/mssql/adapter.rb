@@ -714,9 +714,9 @@ module ArJdbc
       end
     end
 
-    private
+    protected
 
-    def _execute(sql, name = nil)
+    def execute_impl(sql)
       # Match the start of the SQL to determine appropriate behavior.
       # Be aware of multi-line SQL which might begin with 'create stored_proc'
       # and contain 'insert into ...' lines.
@@ -735,6 +735,8 @@ module ArJdbc
         @connection.execute_update(sql)
       end
     end
+
+    private
 
     def identity_insert_table_name(sql)
       table_name = get_table_name(sql)

@@ -215,11 +215,11 @@ module ArJdbc
     end
 
     # @private
-    def _execute(sql, name = nil)
-      result = super
+    def execute_impl(sql)
+      result = execute_impl(sql)
       self.class.insert?(sql) ? last_insert_id : result
     end
-    private :_execute
+    private :execute_impl
 
     # @note Only used with (non-AREL) ActiveRecord **2.3**.
     # @see Arel::Visitors::HSQLDB#limit_offset
