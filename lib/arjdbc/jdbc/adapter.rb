@@ -850,8 +850,11 @@ module ActiveRecord
 
       # Helper to get local/UTC time (based on `ActiveRecord::Base.default_timezone`).
       def get_time(value)
-        get = ::ActiveRecord::Base.default_timezone == :utc ? :getutc : :getlocal
-        value.respond_to?(get) ? value.send(get) : value
+        if ::ActiveRecord::Base.default_timezone == :utc
+          value.respond_to?(:getutc) ? value.getutc : value
+        else
+          value.respond_to?(:getlocal) ? value.getlocal : value
+        end
       end
 
       protected
