@@ -62,7 +62,11 @@ module ArJdbc
       # http://dev.mysql.com/doc/refman/5.0/en/set-statement.html#id944430
       # (trailing comma because variable_assignments will always have content)
       if encoding = config[:encoding]
-        ( variable_assignments ||= [] ).unshift("NAMES #{encoding}")
+        set_enc = "NAMES #{encoding}"
+        if collation = config[:collation]
+          set_enc = "#{set_enc} COLLATE #{collation}"
+        end
+        ( variable_assignments ||= [] ).unshift(set_enc)
       end
 
       # ...and send them all in one query
