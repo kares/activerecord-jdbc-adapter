@@ -36,12 +36,12 @@ env:
   - DB=mysql2 PREPARED_STATEMENTS=false
   - DB=mysql2 PREPARED_STATEMENTS=true
   - DB=mysql2 DRIVER=MariaDB
-  - DB=postgresql PREPARED_STATEMENTS=false INSERT_RETURNING=false
-  - DB=postgresql PREPARED_STATEMENTS=false INSERT_RETURNING=true
-  - DB=postgresql PREPARED_STATEMENTS=true
-  - DB=postgresql PREPARED_STATEMENTS=true INSERT_RETURNING=true
-  - DB=sqlite3 PREPARED_STATEMENTS=false
-  - DB=sqlite3 PREPARED_STATEMENTS=true
+#  - DB=postgresql PREPARED_STATEMENTS=false INSERT_RETURNING=false
+#  - DB=postgresql PREPARED_STATEMENTS=false INSERT_RETURNING=true
+#  - DB=postgresql PREPARED_STATEMENTS=true
+#  - DB=postgresql PREPARED_STATEMENTS=true INSERT_RETURNING=true
+#  - DB=sqlite3 PREPARED_STATEMENTS=false
+#  - DB=sqlite3 PREPARED_STATEMENTS=true
   #- DB=jndi PREPARED_STATEMENTS=false
   #- DB=jndi PREPARED_STATEMENTS=true
 branches:
@@ -70,8 +70,9 @@ matrix:
         mariadb: '10.1'
       env: DB=mariadb PREPARED_STATEMENTS=true
     # Rails test-suite :
+    - env: DB=mysql2     TEST_PREFIX="rails:" AR_VERSION="v5.0.6" TESTOPTS="--name=/unicode|encoding/"
     - env: DB=mysql2     TEST_PREFIX="rails:" AR_VERSION="v5.0.6" # PS off by default
     - env: DB=mysql2     TEST_PREFIX="rails:" AR_VERSION="v5.0.6" PREPARED_STATEMENTS=true
-    - env: DB=postgresql TEST_PREFIX="rails:" AR_VERSION="v5.0.6" # PS on by default
-    - env: DB=postgresql TEST_PREFIX="rails:" AR_VERSION="v5.0.6" PREPARED_STATEMENTS=false
-    - env: DB=sqlite3    TEST_PREFIX="rails:" AR_VERSION="v5.0.6"
+#    - env: DB=postgresql TEST_PREFIX="rails:" AR_VERSION="v5.0.6" # PS on by default
+#    - env: DB=postgresql TEST_PREFIX="rails:" AR_VERSION="v5.0.6" PREPARED_STATEMENTS=false
+#    - env: DB=sqlite3    TEST_PREFIX="rails:" AR_VERSION="v5.0.6"
