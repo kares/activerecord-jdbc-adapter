@@ -70,7 +70,7 @@ matrix:
 #        mariadb: '10.1'
 #      env: DB=mariadb PREPARED_STATEMENTS=true
     # Rails test-suite :
-    - env: DB=mysql2     TEST_PREFIX="rails:" AR_VERSION="v5.0.6" TESTOPTS="--name=/unicode|encoding/"
+    - env: DB=mysql2     TEST_PREFIX="rails:" AR_VERSION="v5.0.6" TESTOPTS="--name=/unicode\|encoding/"
     - env: DB=mysql2     TEST_PREFIX="rails:" AR_VERSION="v5.0.6" # PS off by default
     - env: DB=mysql2     TEST_PREFIX="rails:" AR_VERSION="v5.0.6" PREPARED_STATEMENTS=true
 #    - env: DB=postgresql TEST_PREFIX="rails:" AR_VERSION="v5.0.6" # PS on by default
